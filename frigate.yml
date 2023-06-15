@@ -1,1 +1,67 @@
+mqtt:
+  host: 192.168.0.18
+  port: 1883
+  topic_prefix: frigate
+  client_id: frigate
+  user: userul mqtt
+  password: parola mqtt
+  stats_interval: 300
 
+go2rtc:
+  streams:
+    ha_display_camera:
+      - http://Ip-ul tabletei android:2323/?cmd=getCamshot&password=Parola de la Fully kiosk Browser
+      - "ffmpeg:http://127.0.0.1:1984/api/stream.mjpeg?src=ha_display_camera#video=h264#hardware"
+cameras:
+  ha_display_camera:
+    ffmpeg:
+      hwaccel_args: preset-intel-qsv-h264 #sau presetul de la deviceul pe care este instalat Home Assistant de aici: https://docs.frigate.video/configuration/ffmpeg_presets/#hwaccel-presets
+      output_args:
+        record: preset-record-generic-audio-copy # sau care se potrivește stream-ului de aici: https://docs.frigate.video/configuration/ffmpeg_presets/#output-args-presets
+      inputs:
+        - path: rtsp://127.0.0.1:8554/ha_display_camera?video=h264 # <--- the name here must match the name of the camera in restream
+          input_args: preset-http-mjpeg-generic # presetul camerei pe care o folosiți de aici: https://docs.frigate.video/configuration/ffmpeg_presets/#input-args-presets
+          
+     detect:
+      width: 640
+      height: 352
+      fps: 5
+    objects:
+      track:
+        - person
+    snapshots:
+      enabled: true
+      timestamp: false
+      bounding_box: false
+
+        
+      crop: True
+      height: 200
+      retain:
+        default: 10
+      
+        
+detectors:
+  cpu1:
+    type: cpu
+    num_threads: 3
+    model:
+      path: "/custom_model.tflite"
+  cpu2:
+    type: cpu
+    num_threads: 3
+# pentru procesor intel se poate folosi următorul sau care se potrivește pentru procesorul pe care rulează frigate de aici: https://docs.frigate.video/configuration/detectors
+# ov:
+#  type: openvino
+#   device: AUTO
+#  model:
+#     path: /openvino-model/ssdlite_mobilenet_v2.xml
+
+#odel:
+# width: 300
+# height: 300
+# input_tensor: nhwc
+# input_pixel_format: bgr
+# labelmap_path: /openvino-model/coco_91cl_bkgr.txt
+
+      
