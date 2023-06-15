@@ -1,0 +1,109 @@
+language: ro
+intents:
+
+  SetCover:
+    data:
+      - sentences:        
+          - "(deschide|închide) {cover} la {percentage}[%] [la sută] "
+  SetCover_min_max:
+    data:
+      - sentences:        
+          - "(deschide|închide) {cover} la {percentage_min_max}"
+
+  GetWeather:
+    data:
+      - sentences:  
+          - Care este vremea
+  GetTime:
+    data:
+      - sentences:        
+          - "(cât|care|cat|cît|cit) (este|e) (ora|ceasul|timpul)"
+  GetDate:
+    data:
+      - sentences:        
+          - "(ce|care) (dată|data|zi) este [astăzi] "
+
+  SetVolume:
+    data:
+      - sentences:        
+          - "(setează|schimbă) [volumul] [pentru] [boxa] [boxele] [din] [de la] [la] [în] {media_player} la {percentage} [la sută]"
+  SetVolume_min_max: 
+    data:
+      - sentences:                   
+          - "(setează|schimbă) [volumul] [pentru] [boxa] [boxele] [din] [de la] [la] [în] {media_player} la {percentage_min_max}"
+  SpotifyPlaylistPlay:
+    data:
+      - sentences:
+          - "(Vreau să ascult|redă) {playlist} [pe] [în] [la] {media_player}"
+  SpotifyPause:
+    data:
+      - sentences:
+          - "Pune pauză [pentru] [boxa] [boxele] [din] [de la] [la] [în] [{media_player}]"
+  SpotifyPlay:
+    data:
+      - sentences:
+          - "(redă|play) [muzica] [muzică] [pentru] [boxa] [boxele] [din] [de la] [la] [în] [{media_player}]"
+  SpotifyStop:
+    data:
+      - sentences:
+          - "(oprește|stop) [muzica] [pentru] [boxa] [boxele] [din] [de la] [la] [în] [{media_player}]"
+
+
+lists:
+
+  cover:
+    values:
+      - in: "ruloul din bucătărie"
+        out: "cover.kitchen_blind"
+      - in: "ruloul din birou"
+        out: "cover.office_cover"
+      - in: "ruloul din dormitor"
+        out: "cover.cover.bedroom_cover"
+      - in: "ruloul din camera lui Andrei"
+        out: "cover.andrew_cover"
+      - in: "ruloul din camera iustinei"
+        out: "cover.justina_cover"
+      - in: "ruloul din living"
+        out: "cover.cover.living_cover"
+
+  percentage_min_max:
+    values:
+      - in: "minim"
+        out: "1"
+      - in: "jumătate"
+        out: "50"
+      - in: "maxim"
+        out: "100"
+  percentage:
+    range:
+      type: number
+      from: 0
+      to: 100
+  question:
+    values:
+      - "soarele"
+      - "luna"
+  playlist:
+    values:
+      - in: "muzică de relaxare"
+        out: "37i9dQZF1EIeK62ol20ONe?si=f280b1d95909403b"
+      - in: "muzică religioasă"
+        out: "5f8netQTS5R2eWaY6NUILN?si=78db79ac13f9436d"
+      - in: "muzică populară"
+        out: "3oZdqcGaOkMpiImcocENRr?si=b3ac072b9ac448c5"
+      - in: "muzică modernă"
+        out: "2nu4HTrmoc5JJdVTK3550w?si=76acb1cb3ccb46f5"
+      - in: "colinde"
+        out: "43ERVdFYhNNcirQqUWanT7?si=b2d3d655c0304dee"
+  media_player:
+    values:
+      - in: "birou"
+        out: "media_player.nestaudio9781"
+      - in: "dormitor"
+        out: "media_player.bedroom_speaker_2"
+      - in: "parter"
+        out: "media_player.downstairs_speakers"
+      - in: "hol"
+        out: "media_player.nestaudio5388"
+      - in: "sufragerie"
+        out: "media_player.nestaudio2939"
