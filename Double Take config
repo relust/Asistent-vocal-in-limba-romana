@@ -1,0 +1,61 @@
+# Double Take
+# Learn more at https://github.com/jakowenko/double-take/#configuration
+mqtt:
+  host: ip-ul de la mqtt
+  username: userul mqtt
+  password: parola mqtt
+
+  # topics for mqtt
+  topics:
+    frigate: frigate/events
+    homeassistant: homeassistant
+    matches: double-take/matches
+    cameras: double-take/cameras
+
+
+
+frigate:
+  url: http://ccab4aaf-frigate:5000 # acesta este url-ul pentru addon, pentru alte tipuri de instalări frigate găsiți aici: https://docs.frigate.video/integrations/home-assistant/#configuration
+  update_sub_labels: true # frigate 0.11+ option to include names in frigate events
+
+
+
+detectors:
+  compreface:
+    url: http://ip-ul de la Home Assistant:8000/
+    # recognition api key
+    key: api key de la compreface # după ce ați instalat addon-ul compreface îi accesați interfața UI la url-ul Home Assistant:8000/, creați o aplicatie și îi copiați api key-ul
+    # number of seconds before the request times out and is aborted
+    timeout: 15
+    # minimum required confidence that a recognized face is actually a face
+    # value is between 0.0 and 1.0
+    det_prob_threshold: 0.8
+    # require opencv to find a face before processing with detector
+    opencv_face_required: true
+    # comma-separated slugs of face plugins
+    # https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md)
+    # face_plugins: mask,gender,age
+    # only process images from specific cameras, if omitted then all cameras will be processed
+
+
+cameras:
+
+  ha_display_camera: # numele camerei din frigate
+    detect:
+      match:
+        save: true # save matches
+        confidence: 80 # confidence to be a good match (depends on which provider you use)
+        min_area: 70000 # min area of face box to have a good match
+      unknown:
+        min_area: 1500 # min area to keep an unknown match
+        confidence: 85 # less than this confidence is considered "unknown"
+        
+  events:
+  
+    ha_display_camera:
+      attempts:
+        latest: 16 # number of "latest" frigate snapshots to try to find face in
+        snapshot: 16 # number of event frigate snapshots to try to find face in
+        mqtt: true # whether or not to use mqtt snapshots
+      image:
+        height: 352 # set this to the detect height of your frigate camera
