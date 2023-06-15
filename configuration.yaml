@@ -1,0 +1,30 @@
+stt:
+  - platform: google_cloud_stt
+    key_file: /config/google-credentials.json
+    model: command_and_search
+    language: ro-RO
+# Text to speech
+tts:
+  - platform: google_cloud
+    key_file: /config/google-credentials.json
+    service_name: google_cloud
+    language: ro-RO
+    gender: female 
+    voice: ro-RO-Wavenet-A
+    speed: 1.2
+    pitch: 2
+    gain: 0.0
+    text_type: text
+  - platform: google_translate
+    language: "ro"
+
+
+intent:
+conversation:
+assist_pipeline:
+intent_script: !include intent_script.yaml
+
+spotcast:
+  sp_dc: !secret sp_dc
+  sp_key: !secret sp_key
+  country: RO #optional, added in 3.6.24
