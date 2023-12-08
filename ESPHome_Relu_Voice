@@ -95,7 +95,7 @@ microphone:
     adc_type: external
     i2s_din_pin: GPIO16
     pdm: false
-    channel: left
+    channel: right
 
 
 
