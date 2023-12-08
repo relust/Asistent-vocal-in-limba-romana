@@ -1,15 +1,16 @@
 substitutions:
-  name: "relu-voice"
-  friendly_name: "Relu Voice"
+  name: "esp-voice"
+  friendly_name: "ESP VOICE"
   wifi_ssid: !secret wifi_ssid
   wifi_password: !secret wifi_password
-  wifi_ap_ssid: "Relu Voice"  
+  wifi_ap_ssid: "Esp voice"  
   wifi_ap_password: "password"
-  external_media_player: "media_player.boxa_din_birou"
-  awake_sound: "media-source://media_source/local/beep-07a.mp3"
-  api_encription_key: "XXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-  ota_password: "XXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  external_media_player: "media_player.boxa_din_birou" # boxa pe care se dorește să se redea răspunsurile
+  awake_sound: "media-source://media_source/assist_sounds/awake.wav"
+  api_encription_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  ota_password: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   
+
 esphome:
   name: ${name}
   friendly_name: ${friendly_name}
@@ -116,6 +117,7 @@ output:
     ######################################################
     # One buzzer leg connected to GPIO23, the other to GND
     ######################################################
+#    pin: GPIO14
     pin: GPIO23
     id: buzzer
 
@@ -141,12 +143,12 @@ voice_assistant:
          level: "90%"
     - delay: 100ms
     - output.turn_off: buzzer
-    - homeassistant.service:        
-        service: media_player.play_media
-        data:
-          entity_id: ${external_media_player}
-          media_content_id: ${awake_sound}
-          media_content_type: audio/mpeg   
+#    - homeassistant.service:        
+#        service: media_player.play_media
+#        data:
+#          entity_id: ${external_media_player}
+#          media_content_id: ${awake_sound}
+#          media_content_type: audio/mpeg   
   on_listening:
     - output.turn_on: mute_pin
     - light.turn_on:
@@ -308,3 +310,7 @@ switch:
       - script.execute: reset_led
 
 
+    
+    
+    
+    
