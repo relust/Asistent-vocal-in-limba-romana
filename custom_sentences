@@ -22,13 +22,12 @@ intents:
     data:
       - sentences:        
           - "(ce|care) (dată|data|zi) este [astăzi] "
-Set_temperature:
-  action:
-    - service: "climate.set_temperature"
-      data:
-        temperature: "{{ percentage }}"
-      target:
-        area_id: "{{ area }}"
+  Set_temperature:
+    data:
+      - sentences:
+          - "(setează|schimbă) temperatura [pe] [din] [de la] [la] [în] {area} la {percentage} [de] [grade]"
+          - "(setează|schimbă) temperatura la {percentage} [de] [grade] [pe] [la] [din] [de la] [la] [în] {area} "
+          - "setează termostatul [pe] [din] [de la] [la] [în] {area} la {percentage} [de] [grade]"
   speech:
     text: "Am setat termostatul din {{ area }} la {{ percentage }} de grade"
 
