@@ -9,6 +9,7 @@ substitutions:
   awake_sound: "media-source://media_source/assist_sounds/awake.wav"
   api_encription_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   ota_password: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  tts_service: "tts.edge_tts_say"
   
 
 esphome:
@@ -143,12 +144,18 @@ voice_assistant:
          level: "90%"
     - delay: 100ms
     - output.turn_off: buzzer
+#    - switch.turn_off: use_wake_word
+#    - voice_assistant.stop
 #    - homeassistant.service:        
 #        service: media_player.play_media
 #        data:
 #          entity_id: ${external_media_player}
 #          media_content_id: ${awake_sound}
-#          media_content_type: audio/mpeg   
+#          media_content_type: audio/mpeg 
+#    - delay: 1100ms       
+#    - voice_assistant.start
+#    - delay: 200ms
+#    - switch.turn_on: use_wake_word  
   on_listening:
     - output.turn_on: mute_pin
     - light.turn_on:
@@ -185,6 +192,12 @@ voice_assistant:
           speaker.is_playing:
     - output.turn_on: mute_pin
     - script.execute: reset_led
+    - if:
+        condition:
+          switch.is_on: use_wake_word
+        then:
+          - voice_assistant.start_continuous:
+
   on_error:
     - light.turn_on:
         id: led
