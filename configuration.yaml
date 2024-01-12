@@ -30,7 +30,7 @@ tts:
     text_type: text
   - platform: google_translate
     language: "ro"
-    - platform: edge_tts
+  - platform: edge_tts
     service_name: edge_tts_say 
     language: ro-RO-AlinaNeural
     rate: +10%
