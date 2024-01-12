@@ -1,3 +1,16 @@
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+sun:
+
+http:
+#  ssl_certificate: /ssl/fullchain.pem
+#  ssl_key: /ssl/privkey.pem
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.30.33.0/24
+
+
 stt:
   - platform: google_cloud_stt
     key_file: /config/google-credentials.json
@@ -17,14 +30,36 @@ tts:
     text_type: text
   - platform: google_translate
     language: "ro"
-
+    - platform: edge_tts
+    service_name: edge_tts_say 
+    language: ro-RO-AlinaNeural
+    rate: +10%
+    volume: +0%
 
 intent:
 conversation:
 assist_pipeline:
+#  debug_recording_dir: /share/assist_pipeline
 intent_script: !include intent_script.yaml
+
+homeassistant:
+  media_dirs:
+    local: /media
+    assist_sounds: /share/assist_microphone/sounds
+chatgpt:
+  api_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  model: gpt-3.5-turbo # optional, default is "gpt-3.5-turbo"
+  temperature: 1.0 # optional, default is 1.0
 
 spotcast:
   sp_dc: !secret sp_dc
   sp_key: !secret sp_key
   country: RO #optional, added in 3.6.24
+  
+shell_command:
+  random_wav: bash /share/assist_microphone/sounds/random.sh
+  random_wav_nervous: bash /share/assist_microphone/sounds/random_nervous.sh
+  random_wav_testpi: ssh -i /config/.ssh/id_rsa -o StrictHostKeyChecking=no relu@192.168.0.xxx bash /home/relu/wyoming-satellite/sounds/random.sh
+  random_wav_testpi_nervous: ssh -i /config/.ssh/id_rsa -o StrictHostKeyChecking=no relu@192.168.0.xxx bash /home/relu/wyoming-satellite/sounds/random_nervous.sh
+
+
