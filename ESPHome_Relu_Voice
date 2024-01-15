@@ -116,10 +116,9 @@ output:
     id: mute_pin
   - platform: ledc
     ######################################################
-    # One buzzer leg connected to GPIO23, the other to GND
+    # One buzzer leg connected to GPIO14, the other to GND
     ######################################################
-#    pin: GPIO14
-    pin: GPIO23
+    pin: GPIO14
     id: buzzer
 
 
@@ -152,7 +151,14 @@ voice_assistant:
 #          entity_id: ${external_media_player}
 #          media_content_id: ${awake_sound}
 #          media_content_type: audio/mpeg 
-#    - delay: 1100ms       
+#########  THIS IS FOR GOOGLE HOME SPEAKERS CHIME SOUND #######
+#    - if:
+#        condition:
+#          switch.is_on: google_speaker_status
+#        then:
+#          - delay: 1200ms 
+#        else:
+#          - delay: 3s        
 #    - voice_assistant.start
 #    - delay: 200ms
 #    - switch.turn_on: use_wake_word  
@@ -173,7 +179,7 @@ voice_assistant:
         effect: "Fast Pulse"
   on_tts_start:
     - homeassistant.service:        
-        service: tts.google_cloud
+        service: ${tts_service}
         data:          
           entity_id: ${external_media_player}
           message: !lambda return x;    
@@ -321,6 +327,13 @@ switch:
       - voice_assistant.stop
       - lambda: id(va).set_use_wake_word(false);
       - script.execute: reset_led
+#########  THIS IS FOR GOOGLE HOME SPEAKERS CHIME SOUND - IS NEED A AUTOMATION IN HA TO TURN OFF WHEN SPEAKER IS OFF #######
+#  - platform: template
+#    name: Google speaker status
+#    id: google_speaker_status
+#    optimistic: true
+#    restore_mode: RESTORE_DEFAULT_ON
+#    entity_category: config
 
 
     
