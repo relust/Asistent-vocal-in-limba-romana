@@ -193,11 +193,11 @@ voice_assistant:
 #          media_content_id: ${done_sound}
 #          media_content_type: audio/mpeg 
 #    - delay: 2s
-#    - homeassistant.service:        
-#        service: ${tts_service}
-#        data:          
-#          entity_id: ${external_media_player}
-#          message: !lambda return x;
+    - homeassistant.service:        
+        service: ${tts_service}
+        data:          
+          entity_id: ${external_media_player}
+          message: !lambda return x;
             
   
   on_end:
