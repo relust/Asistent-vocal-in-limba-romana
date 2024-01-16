@@ -1,0 +1,67 @@
+- id: '1697519248954'
+  alias: Assist random wav
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - wake_word.porcupine
+    - wake_word.openwakeword
+    id: wakeword_detect
+  - platform: template
+    value_template: '{{ states(''counter.assist_random_wav_counter'')|float > 0 }}'
+    id: wakeword_counter_reset >0
+    enabled: true
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+  - platform: template
+    value_template: '{{ states(''counter.assist_random_wav_counter'')|float == 5 }}'
+    id: wakeword_counter_reset = 5
+    enabled: true
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - wakeword_detect
+      sequence:
+      - choose:
+        - conditions:
+          - condition: not
+            conditions:
+            - condition: template
+              value_template: '{{ is_state(''counter.assist_random_wav_counter'',
+                ''5'') }}'
+          sequence:
+          - service: shell_command.random_wav
+            data: {}
+          - service: shell_command.random_wav_andrei
+            data: {}
+          - service: counter.increment
+            data: {}
+            target:
+              entity_id: counter.assist_random_wav_counter
+        - conditions:
+          - condition: template
+            value_template: '{{ is_state(''counter.assist_random_wav_counter'', ''5'')
+              }}'
+          sequence:
+          - service: shell_command.random_wav_nervous
+            data: {}
+    - conditions:
+      - condition: trigger
+        id:
+        - wakeword_counter_reset >0
+        - wakeword_counter_reset = 5
+      sequence:
+      - service: counter.reset
+        data: {}
+        target:
+          entity_id: counter.assist_random_wav_counter
+  mode: single
