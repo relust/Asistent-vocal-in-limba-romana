@@ -41,8 +41,6 @@
           sequence:
           - service: shell_command.random_wav
             data: {}
-          - service: shell_command.random_wav_andrei
-            data: {}
           - service: counter.increment
             data: {}
             target:
