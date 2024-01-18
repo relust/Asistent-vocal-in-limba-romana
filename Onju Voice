@@ -1,0 +1,609 @@
+substitutions:
+  name: "onju-voice"
+  friendly_name: "Onju Voice"
+  wifi_ssid: !secret wifi_ssid
+  wifi_password: !secret wifi_password
+  wifi_ap_ssid: "Onju Voice"  
+  wifi_ap_password: "password"
+  api_encription_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  ota_password: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  external_media_player: "media_player.onju_voice_onju_voice"
+  awake_sound: "media-source://media_source/assist_sounds/awake.wav"
+  done_sound: "media-source://media_source/assist_sounds/done.wav" 
+
+
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+  name_add_mac_suffix: false
+  min_version: 2023.11.6
+  on_boot:
+    then:
+      - light.turn_on:
+          id: top_led
+          effect: slow_pulse
+          red: 100%
+          green: 60%
+          blue: 0%
+      - wait_until:
+          condition:
+            wifi.connected:
+      - light.turn_on:
+          id: top_led
+          effect: pulse
+          red: 0%
+          green: 100%
+          blue: 0%
+      - wait_until:
+          condition:
+            api.connected:
+      - light.turn_on:
+          id: top_led
+          effect: none
+          red: 0%
+          green: 100%
+          blue: 0%
+      - delay: 1s
+      - script.execute: reset_led
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: arduino
+
+logger:
+api:
+  encryption:
+    key: ${api_encription_key}
+  services:
+    - service: start_va
+      then:
+        - voice_assistant.start
+    - service: stop_va
+      then:
+        - voice_assistant.stop
+
+ota:
+  password: ${ota_password}
+
+wifi:
+  ssid: ${wifi_ssid}
+  password: ${wifi_password}
+  ap:
+    ssid: "Onju-Voice Fallback Hotspot"
+    password: "password"
+
+captive_portal:
+
+globals:
+  - id: thresh_percent
+    type: float
+    initial_value: "0.03"
+    restore_value: false
+  - id: touch_calibration_values_left
+    type: uint32_t[5]
+    restore_value: false
+  - id: touch_calibration_values_center
+    type: uint32_t[5]
+    restore_value: false
+  - id: touch_calibration_values_right
+    type: uint32_t[5]
+    restore_value: false
+
+interval:
+  - interval: 1s
+    then:
+      - script.execute:
+          id: calibrate_touch
+          button: 0
+      - script.execute:
+          id: calibrate_touch
+          button: 1
+      - script.execute:
+          id: calibrate_touch
+          button: 2
+
+i2s_audio:
+  - i2s_lrclk_pin: GPIO13
+    i2s_bclk_pin: GPIO18
+
+media_player:
+  - platform: i2s_audio
+    name: None
+    id: onju_out
+    dac_type: external
+    i2s_dout_pin: GPIO12
+    mode: mono
+    mute_pin:
+      number: GPIO21
+      inverted: True
+
+######
+# speaker:
+#   - platform: i2s_audio
+#     id: onju_out
+#     dac_type: external
+#     i2s_dout_pin: GPIO12
+#     mode: stereo
+######
+
+microphone:
+  - platform: i2s_audio
+    id: onju_microphone
+    i2s_din_pin: GPIO17
+    adc_type: external
+    pdm: false
+
+voice_assistant:
+  id: va
+  microphone: onju_microphone
+  media_player: onju_out
+  ######
+  # speaker: onju_out
+  ######
+  use_wake_word: true
+
+#  on_wake_word_detected:
+#    - switch.turn_off: use_wake_word
+#    - homeassistant.service:        
+#        service: media_player.play_media
+#        data:
+#          entity_id: ${external_media_player}
+#          media_content_id: ${awake_sound}
+#          media_content_type: audio/mpeg 
+#    - delay: 1s
+#    - voice_assistant.start
+ 
+   
+  on_listening:
+    - delay: 200ms
+    - light.turn_on:
+        id: top_led
+        blue: 100%
+        red: 100%
+        green: 100%
+        brightness: 100%
+        effect: listening
+  on_stt_vad_end:
+    - delay: 200ms
+    - light.turn_on:
+        id: top_led
+        blue: 100%
+        red: 0%
+        green: 20%
+        brightness: 70%
+        effect: processing
+  on_tts_end:
+    - delay: 200ms
+    - light.turn_on:
+        id: top_led
+        blue: 0%
+        red: 20%
+        green: 100%
+        effect: speaking
+    - delay: 200ms
+
+#    - homeassistant.service:        
+#        service: media_player.play_media
+#        data:
+#          entity_id: ${external_media_player}
+#          media_content_id: ${done_sound}
+#          media_content_type: audio/mpeg 
+#    - delay: 3s
+    - media_player.play_media: !lambda return x;
+#    - delay: 1s
+#    - if:
+#        condition:
+#          media_player.is_playing: onju_out
+#        then:
+#          - wait_until:
+#              not:
+#                media_player.is_playing: onju_out
+#        else:
+#          - delay: 3s
+#    - delay: 2s         
+#    - switch.turn_on: use_wake_word       
+
+  on_end:
+    - delay: 200ms
+    - script.execute: reset_led
+
+  on_client_connected:
+    - if:
+        condition:
+          and:
+            - switch.is_on: use_wake_word
+            - binary_sensor.is_off: mute_switch
+        then:
+          - voice_assistant.start_continuous:
+  on_client_disconnected:
+    - if:
+        condition:
+          and:
+            - switch.is_on: use_wake_word
+            - binary_sensor.is_off: mute_switch
+        then:
+          - voice_assistant.stop:
+  on_error:
+    - light.turn_on:
+        id: top_led
+        blue: 0%
+        red: 100%
+        green: 0%
+        effect: none
+    - delay: 1s
+    - script.execute: reset_led
+
+
+number:
+  - platform: template
+    name: "Touch threshold percentage"
+    id: touch_threshold_percentage
+    update_interval: never
+    entity_category: config
+    initial_value: 1.25
+    min_value: -1
+    max_value: 5
+    step: 0.25
+    optimistic: true
+    on_value:
+      then:
+        - lambda: !lambda |-
+            id(thresh_percent) = 0.01 * x;
+
+esp32_touch:
+  setup_mode: false
+  sleep_duration: 2ms 
+  measurement_duration: 800us
+  low_voltage_reference: 0.8V
+  high_voltage_reference: 2.4V
+
+  filter_mode: IIR_16
+  debounce_count: 2
+  noise_threshold: 0
+  jitter_step: 0
+  smooth_mode: IIR_2
+
+  denoise_grade: BIT8
+  denoise_cap_level: L0
+
+binary_sensor:
+  - platform: esp32_touch
+    id: volume_down
+    pin: GPIO4
+    threshold: 539000 # 533156-551132
+    on_press:
+      then:
+        - light.turn_on: left_led
+        - script.execute:
+            id: set_volume
+            volume: -0.05
+        - delay: 0.75s
+        - while:
+            condition:
+              binary_sensor.is_on: volume_down
+            then:
+              - script.execute:
+                  id: set_volume
+                  volume: -0.05
+              - delay: 150ms
+    on_release:
+      then:
+        - light.turn_off: left_led
+
+  - platform: esp32_touch
+    id: volume_up
+    pin: GPIO2
+    threshold: 580000 # 575735-593064
+    on_press:
+      then:
+        - light.turn_on: right_led
+        - script.execute:
+            id: set_volume
+            volume: 0.05
+        - delay: 0.75s
+        - while:
+            condition:
+              binary_sensor.is_on: volume_up
+            then:
+              - script.execute:
+                  id: set_volume
+                  volume: 0.05
+              - delay: 150ms
+    on_release:
+      then:
+        - light.turn_off: right_led
+
+  - platform: esp32_touch
+    id: action
+    pin: GPIO3
+    threshold: 751000 # 745618-767100
+    on_click:
+      - min_length: 20ms
+        max_length: 900ms
+        then:      
+        - if:
+            condition:
+              or:
+                - switch.is_off: use_wake_word
+                - binary_sensor.is_on: mute_switch
+            then:
+              - logger.log:
+                  tag: "action_click"
+                  format: "Voice assistant is running: %s"
+                  args: ['id(va).is_running() ? "yes" : "no"']
+              - if:
+                  condition: media_player.is_playing
+                  then:
+                    - media_player.stop
+              - if:
+                  condition: voice_assistant.is_running
+                  then:
+                    - voice_assistant.stop:
+                  else:
+                    - voice_assistant.start:
+            else:
+              - logger.log:
+                  tag: "action_click"
+                  format: "Voice assistant was running with wake word detection enabled. Starting continuously"
+              - if:
+                  condition: media_player.is_playing
+                  then:
+                    - media_player.stop
+              - voice_assistant.stop
+              - delay: 1s
+              - script.execute: reset_led
+              - script.wait: reset_led
+              - voice_assistant.start_continuous:
+      - min_length: 1000ms
+        max_length: 9000ms
+        then:
+          - switch.toggle: use_wake_word
+
+  - platform: gpio
+    id: mute_switch
+    pin:
+      number: GPIO38
+      mode: INPUT_PULLUP
+    name: Disable wake word
+    on_press:
+      - script.execute: turn_off_wake_word
+    on_release:
+      - script.execute: turn_on_wake_word
+
+light:
+  - platform: esp32_rmt_led_strip
+    id: leds
+    pin: GPIO11
+    chipset: SK6812
+    num_leds: 6
+    rgb_order: grb
+    rmt_channel: 0
+    default_transition_length: 0s
+    gamma_correct: 2.8
+  - platform: partition
+    id: left_led
+    segments:
+      - id: leds
+        from: 0
+        to: 0
+    default_transition_length: 100ms
+  - platform: partition
+    id: top_led
+    segments:
+      - id: leds
+        from: 1
+        to: 4
+    default_transition_length: 100ms
+    effects:
+      - pulse:
+          name: pulse
+          transition_length: 250ms
+          update_interval: 250ms
+      - pulse:
+          name: slow_pulse
+          transition_length: 1s
+          update_interval: 2s
+      - addressable_lambda:
+          name: show_volume
+          update_interval: 50ms
+          lambda: |-
+            int int_volume = int(id(onju_out).volume * 100.0f * it.size());
+            int full_leds = int_volume / 100;
+            int last_brightness = int_volume % 100;
+            int i = 0;
+            for(; i < full_leds; i++) {
+              it[i] = Color::WHITE;
+            }
+            if(i < 4) {
+              it[i++] = Color(0,0,0).fade_to_white(last_brightness*256/100);
+            }
+            for(; i < it.size(); i++) {
+              it[i] = Color::BLACK;
+            }
+      - addressable_twinkle:
+          name: listening_ww
+          twinkle_probability: 1%
+      - addressable_twinkle:
+          name: listening
+          twinkle_probability: 45%
+      - addressable_scan:
+          name: processing
+          move_interval: 80ms
+      - addressable_flicker:
+          name: speaking
+          intensity: 35%
+  - platform: partition
+    id: right_led
+    segments:
+      - id: leds
+        from: 5
+        to: 5
+    default_transition_length: 100ms
+
+script:
+  - id: reset_led
+    then:
+      - if:
+          condition:
+            and:
+              - switch.is_on: use_wake_word
+              - binary_sensor.is_off: mute_switch
+          then:
+            - light.turn_on:
+                id: top_led
+                blue: 100%
+                red: 100%
+                green: 0%
+                brightness: 60%
+                effect: listening_ww
+          else:
+            - light.turn_off: top_led
+
+  - id: set_volume
+    mode: restart
+    parameters:
+      volume: float
+    then:
+      - media_player.volume_set:
+          id: onju_out
+          volume: !lambda return clamp(id(onju_out).volume+volume, 0.0f, 1.0f);
+      - light.turn_on:
+          id: top_led
+          effect: show_volume
+      - delay: 1s
+      - script.execute: reset_led
+
+  - id: turn_on_wake_word
+    then:
+      - if:
+          condition:
+            and:
+              - binary_sensor.is_off: mute_switch
+              - switch.is_on: use_wake_word
+          then:
+            - lambda: id(va).set_use_wake_word(true);
+            - if:
+                condition:
+                  media_player.is_playing:
+                then:
+                  - media_player.stop:
+            - if:
+                condition:
+                  not:
+                    - voice_assistant.is_running
+                then:
+                  - voice_assistant.start_continuous
+            - script.execute: reset_led
+          else:
+            - logger.log:
+                tag: "turn_on_wake_word"
+                format: "Trying to start listening for wake word, but %s"
+                args:
+                  [
+                    'id(mute_switch).state ? "mute switch is on" : "use wake word toggle is off"',
+                  ]
+                level: "INFO"
+
+  - id: turn_off_wake_word
+    then:
+      - voice_assistant.stop
+      - lambda: id(va).set_use_wake_word(false);
+      - script.execute: reset_led
+
+  - id: calibrate_touch
+    parameters:
+      button: int
+    then:
+      - lambda: |-
+          static byte thresh_indices[3] = {0, 0, 0};
+          static uint32_t sums[3] = {0, 0, 0};
+          static byte qsizes[3] = {0, 0, 0};
+          static int consecutive_anomalies_per_button[3] = {0, 0, 0};
+
+          uint32_t newval;
+          uint32_t* calibration_values;
+          switch(button) {
+            case 0:
+              newval = id(volume_down).get_value();
+              calibration_values = id(touch_calibration_values_left);
+              break;
+            case 1:
+              newval = id(action).get_value();
+              calibration_values = id(touch_calibration_values_center);
+              break;
+            case 2:
+              newval = id(volume_up).get_value();
+              calibration_values = id(touch_calibration_values_right);
+              break;
+            default:
+              ESP_LOGE("touch_calibration", "Invalid button ID (%d)", button);
+              return;
+          }
+
+          if(newval == 0) return;
+
+          //ESP_LOGD("touch_calibration", "[%d] qsize %d, sum %d, thresh_index %d, consecutive_anomalies %d", button, qsizes[button], sums[button], thresh_indices[button], consecutive_anomalies_per_button[button]);
+          //ESP_LOGD("touch_calibration", "[%d] New value is %d", button, newval);
+
+          if(qsizes[button] == 5) {
+            float avg = float(sums[button])/float(qsizes[button]);
+            if((fabs(float(newval)-avg)/avg) > id(thresh_percent)) {
+              consecutive_anomalies_per_button[button]++;
+              //ESP_LOGD("touch_calibration", "[%d] %d anomalies detected.", button, consecutive_anomalies_per_button[button]);
+              if(consecutive_anomalies_per_button[button] < 10)
+                return;
+            } 
+          }
+
+          //ESP_LOGD("touch_calibration", "[%d] Resetting consecutive anomalies counter.", button);
+          consecutive_anomalies_per_button[button] = 0;
+
+
+          if(qsizes[button] == 5) {
+            //ESP_LOGD("touch_calibration", "[%d] Queue full, removing %d.", button, id(touch_calibration_values)[thresh_indices[button]]);
+            sums[button] -= (uint32_t) *(calibration_values+thresh_indices[button]);// id(touch_calibration_values)[thresh_indices[button]];
+            qsizes[button]--;
+          }
+          *(calibration_values+thresh_indices[button]) = newval;
+          sums[button] += newval;
+          qsizes[button]++;
+          thresh_indices[button] = (thresh_indices[button] + 1) % 5;
+
+          //ESP_LOGD("touch_calibration", "[%d] Average value is %d", button, sums[button]/qsizes[button]);
+          uint32_t newthresh = uint32_t((sums[button]/qsizes[button]) * (1.0 + id(thresh_percent)));
+          //ESP_LOGD("touch_calibration", "[%d] Setting threshold %d", button, newthresh);
+
+          switch(button) {
+            case 0:
+              id(volume_down).set_threshold(newthresh);
+              break;
+            case 1:
+              id(action).set_threshold(newthresh);
+              break;
+            case 2:
+              id(volume_up).set_threshold(newthresh);
+              break;
+            default:
+              ESP_LOGE("touch_calibration", "Invalid button ID (%d)", button);
+              return;
+          }
+
+switch:
+  - platform: template
+    name: Use Wake Word
+    id: use_wake_word
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    on_turn_on:
+      - script.execute: turn_on_wake_word
+    on_turn_off:
+      - script.execute: turn_off_wake_word
+
+
+    
+
+
+
+    
