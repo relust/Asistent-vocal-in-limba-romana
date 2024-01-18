@@ -5,13 +5,13 @@ substitutions:
   wifi_password: !secret wifi_password
   wifi_ap_ssid: "Esp voice"  
   wifi_ap_password: "password"
-  external_media_player: "media_player.boxa_din_birou" # boxa pe care se dorește să se redea răspunsurile
-  awake_sound: "media-source://media_source/assist_sounds/awake.wav"
-  done_sound: "media-source://media_source/assist_sounds/done.wav"
   api_encription_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   ota_password: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  tts_service: "tts.edge_tts_say"
-  
+  external_media_player: "media_player.boxa_din_birou" # speaker to stream responds
+  awake_sound: "media-source://media_source/assist_sounds/awake.wav"
+  done_sound: "media-source://media_source/assist_sounds/done.wav" 
+
+
 esphome:
   name: ${name}
   friendly_name: ${friendly_name}
@@ -65,6 +65,13 @@ logger:
 api:
   encryption:
     key: ${api_encription_key}
+  services:
+    - service: start_va
+      then:
+        - voice_assistant.start
+    - service: stop_va
+      then:
+        - voice_assistant.stop
 
 ota:
   password: ${ota_password}
@@ -75,10 +82,10 @@ wifi:
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "${wifi_ap_ssid}"
+    ssid: ${wifi_ap_ssid}
     password: ${wifi_ap_password}
 captive_portal:
-improv_serial:
+
 external_components:
   - source: github://pr#5230
     components:
@@ -114,6 +121,7 @@ output:
       number: GPIO21
       inverted: true
     id: mute_pin
+
   - platform: ledc
     ######################################################
     # One buzzer leg connected to GPIO14, the other to GND
@@ -134,17 +142,17 @@ voice_assistant:
   volume_multiplier: 2.0
 #  vad_threshold: 3
   on_wake_word_detected:
-    - output.turn_on: buzzer
-    - output.ledc.set_frequency:
-         id: buzzer
-         frequency: "800Hz"
-    - output.set_level:
-         id: buzzer
-         level: "90%"
-    - delay: 100ms
+#    - output.turn_on: buzzer
+#    - output.ledc.set_frequency:
+#         id: buzzer
+#         frequency: "800Hz"
+#    - output.set_level:
+#         id: buzzer
+#         level: "90%"
+#    - delay: 100ms
     - output.turn_off: buzzer
 #    - switch.turn_off: use_wake_word
-#    - voice_assistant.stop
+#    - delay: 100ms
 #    - homeassistant.service:        
 #        service: media_player.play_media
 #        data:
@@ -160,10 +168,9 @@ voice_assistant:
 #        else:
 #          - delay: 3s        
 #    - voice_assistant.start
-#    - delay: 200ms
-#    - switch.turn_on: use_wake_word  
+  
   on_listening:
-    - output.turn_on: mute_pin
+    - delay: 100ms
     - light.turn_on:
         id: led
         blue: 60%
@@ -171,14 +178,15 @@ voice_assistant:
         green: 0%
         effect: "Slow Pulse"
   on_stt_vad_end:
+    - delay: 100ms
     - light.turn_on:
         id: led
         blue: 60%
         red: 0%
         green: 0%
         effect: "Fast Pulse"
-  on_tts_start:
-    - output.turn_off: mute_pin
+  on_tts_end:
+    - delay: 100ms
     - light.turn_on:
         id: led
         blue: 0%
@@ -186,6 +194,7 @@ voice_assistant:
         green: 100%
         brightness: 60%
         effect: none
+    - delay: 100ms
 #    - homeassistant.service:        
 #        service: media_player.play_media
 #        data:
@@ -194,22 +203,16 @@ voice_assistant:
 #          media_content_type: audio/mpeg 
 #    - delay: 2s
     - homeassistant.service:        
-        service: ${tts_service}
-        data:          
+        service: media_player.play_media
+        data:
           entity_id: ${external_media_player}
-          message: !lambda return x;
-            
-  
+          media_content_id: !lambda return x;
+          media_content_type: audio/mpeg 
+#    - delay: 2s
+#    - switch.turn_on: use_wake_word        
   on_end:
     - delay: 100ms
-    - output.turn_on: mute_pin
     - script.execute: reset_led
-#    - delay: 2s
-#    - if:
-#        condition:
-#          switch.is_on: use_wake_word
-#        then:
-#          - voice_assistant.start_continuous:
 
   on_error:
     - light.turn_on:
