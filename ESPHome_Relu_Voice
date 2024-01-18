@@ -142,14 +142,14 @@ voice_assistant:
   volume_multiplier: 2.0
 #  vad_threshold: 3
   on_wake_word_detected:
-#    - output.turn_on: buzzer
-#    - output.ledc.set_frequency:
-#         id: buzzer
-#         frequency: "800Hz"
-#    - output.set_level:
-#         id: buzzer
-#         level: "90%"
-#    - delay: 100ms
+    - output.turn_on: buzzer
+    - output.ledc.set_frequency:
+         id: buzzer
+         frequency: "800Hz"
+    - output.set_level:
+         id: buzzer
+         level: "90%"
+    - delay: 100ms
     - output.turn_off: buzzer
 #    - switch.turn_off: use_wake_word
 #    - delay: 100ms
