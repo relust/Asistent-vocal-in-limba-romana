@@ -1,3 +1,6 @@
+# Automatizare pentru a schimba răspunsurile random obișnuite cu unele mai nervoase atunci când se fac mai mult de 5 solicitări în 2 minute 
+# Este necesar un contor numit ”counter.assist_random_wav_counter” cu limita maximă setată la 5
+
 - id: '1697519248954'
   alias: Assist random wav
   description: ''
@@ -62,4 +65,45 @@
         data: {}
         target:
           entity_id: counter.assist_random_wav_counter
+  mode: single
+
+# Automatizare pentru butonul de status al boxei google home pentru satelit esp32 necesar pentru delay-ul cauzat de beeb-ul pe care îl face boxa google când pornește
+
+  - id: '1705398527721'
+  alias: Assist boxa google din birou status switch
+  description: ''
+  trigger:
+  - platform: device
+    device_id: 9b2ce56425da58cde14d1fbf3078e64d
+    domain: media_player
+    entity_id: 92d88bc4edb1e54a0985c58a0327da12
+    type: turned_off
+    id: boxa din birou off
+  - platform: device
+    device_id: 9b2ce56425da58cde14d1fbf3078e64d
+    domain: media_player
+    entity_id: 92d88bc4edb1e54a0985c58a0327da12
+    type: idle
+    id: boxa din birou on
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - boxa din birou off
+      sequence:
+      - type: turn_off
+        device_id: 3023ad61f4a7b186fc537baca2d7a8fe
+        entity_id: 36f98596c4869e74607765bc57577e04
+        domain: switch
+    - conditions:
+      - condition: trigger
+        id:
+        - boxa din birou on
+      sequence:
+      - type: turn_on
+        device_id: 3023ad61f4a7b186fc537baca2d7a8fe
+        entity_id: 36f98596c4869e74607765bc57577e04
+        domain: switch
   mode: single
