@@ -60,6 +60,6 @@ shell_command:
   random_wav: bash /share/assist_microphone/sounds/random.sh
   random_wav_nervous: bash /share/assist_microphone/sounds/random_nervous.sh
   random_wav_testpi: ssh -i /config/.ssh/id_rsa_testpi -o StrictHostKeyChecking=no relu@192.168.0.xxx bash /home/relu/wyoming-satellite/sounds/random.sh
-  random_wav_testpi_nervous: ssh -i /config/.ssh/id_rsa -o StrictHostKeyChecking=no relu@192.168.0.xxx bash /home/relu/wyoming-satellite/sounds/random_nervous.sh
+  random_wav_testpi_nervous: ssh -i /config/.ssh/id_rsa_testpi -o StrictHostKeyChecking=no relu@192.168.0.xxx bash /home/relu/wyoming-satellite/sounds/random_nervous.sh
 
 
