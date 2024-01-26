@@ -1,3 +1,6 @@
+Salutare:
+  speech:
+    text: "Sunt bine, mulțumesc"
 Set_temperature:
   action:
     - service: "climate.set_temperature"
