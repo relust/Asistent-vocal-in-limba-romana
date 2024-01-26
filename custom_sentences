@@ -1,14 +1,19 @@
 language: ro
 intents:
+  Salutare:
+    data:
+      - sentences:
+          - "Ce mai faci"
 
   SetCover:
     data:
-      - sentences:        
-          - "(deschide|închide) {cover} la {percentage}[%] [la sută] "
+      - sentences:
+          - "(deschide|închide) rulou[l][ri][le] [din] [de la] [la] [în] {area} [la] {percentage}[%] [la sută] "
   SetCover_min_max:
     data:
-      - sentences:        
-          - "(deschide|închide) {cover} la {percentage_min_max}"
+      - sentences:
+          - "(deschide|închide) rulou[l][ri][le] [din] [de la] [la] [în] {area} [la] {percentage_min_max}"
+
 
   GetWeather:
     data:
@@ -28,18 +33,43 @@ intents:
           - "(setează|schimbă) temperatura [pe] [din] [de la] [la] [în] {area} la {percentage} [de] [grade]"
           - "(setează|schimbă) temperatura la {percentage} [de] [grade] [pe] [la] [din] [de la] [la] [în] {area} "
           - "setează termostatul [pe] [din] [de la] [la] [în] {area} la {percentage} [de] [grade]"
+  Light_reset:
+    data:
+      - sentences:
+          - "resetează lumin[a][ile] din {area}"
   speech:
     text: "Am setat termostatul din {{ area }} la {{ percentage }} de grade"
+  MediaPause:
+    data:
+      - sentences:
+          - "Pune pauză [pentru] [la] [muzica] [boxa] [boxele] [din] [de la] [la] [în] {area}"
 
-  SetVolume:
+  MediaPlay:
     data:
-      - sentences:        
-          - "(setează|schimbă) [volumul] [pentru] [boxa] [boxele] [din] [de la] [la] [în] {media_player} la {percentage} [la sută]"
-  SetVolume_min_max: 
+      - sentences:
+          - "Reia [redararea] [muzica] [pentru] [la] [boxa] [boxele] [din] [de la] [la] [în] {area}"
+          - "Continuă [redararea] [muzica] [pentru] [la]  [boxa] [boxele] [din] [de la] [la] [în] {area}"
+          - "Play [pentru] [la] [muzica] [boxa] [boxele] [din] [de la] [la] [în] [{area}]"
+
+  MediaStop:
     data:
-      - sentences:                   
-          - "(setează|schimbă) [volumul] [pentru] [boxa] [boxele] [din] [de la] [la] [în] {media_player} la {percentage_min_max}"
-  SpotifyPlaylistPlay:
+      - sentences:
+          - "(oprește|stop) [muzica] [pentru] [boxa] [boxele] [din] [de la] [la] [în] {area}"
+
+  MediaSetVolume:
+    data:
+      - sentences:
+          - "(setează|schimbă) [volumul] [pentru] [la] [muzica] [boxa] [boxele] [din] [de la] [la] [în] {area} la {percentage} [la sută]"
+          - "(setează|schimbă) [volumul] la {percentage} [la sută] [pentru] [la] [muzica] [boxa] [boxele] [din] [de la] [la] [în] {area} "
+
+  MediaSetVolume_min_max:
+    data:
+      - sentences:
+          - "(setează|schimbă) [volumul] [pentru] [la] [muzica] [boxa] [boxele] [din] [de la] [la] [în] {area} la {percentage_min_max}"
+          - "(setează|schimbă) [volumul] la {percentage_min_max} [pentru] [la] [muzica] [boxa] [boxele] [din] [de la] [la] [în] {area} "
+
+
+SpotifyPlaylistPlay:
     data:
       - sentences:
           - "(Vreau să ascult|redă) {playlist} [pe] [în] [la] {media_player}"
@@ -55,6 +85,12 @@ intents:
     data:
       - sentences:
           - "(oprește|stop) [muzica] [pentru] [boxa] [boxele] [din] [de la] [la] [în] [{media_player}]"
+  SpotifyMove:
+    data:
+      - sentences:
+          - "mută muzica în {area}"
+            - "(mută|schibă) [muzica] [redararea] [la] [boxa] [boxele] [din] [de la] [la] [pe] [în] {area}"
+
 
 
 lists:
@@ -87,10 +123,7 @@ lists:
       type: number
       from: 0
       to: 100
-  question:
-    values:
-      - "soarele"
-      - "luna"
+ 
   playlist:
     values:
       - in: "muzică de relaxare"
@@ -106,12 +139,16 @@ lists:
   media_player:
     values:
       - in: "birou"
-        out: "media_player.nestaudio9781"
+        out: "boxa din birou"
       - in: "dormitor"
-        out: "media_player.bedroom_speaker_2"
+        out: "boxa din dormitor"
       - in: "parter"
-        out: "media_player.downstairs_speakers"
+        out: "boxele de la parter"
       - in: "hol"
-        out: "media_player.nestaudio5388"
+        out: "boxa din hol"
       - in: "sufragerie"
-        out: "media_player.nestaudio2939"
+        out: "boxa din sufragerie"
+      - in: "foișor"
+        out: "televizorul din foișor"
+      - in: "bucătărie"
+        out: "boxa din bucătărie"
