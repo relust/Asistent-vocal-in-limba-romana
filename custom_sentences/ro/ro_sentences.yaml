@@ -5,4 +5,152 @@ intents:
       - sentences:
           - "Ce mai faci"
 
+  SetCover:
+    data:
+      - sentences:
+          - "(deschide|închide) rulou[l][ri][le] [din] [de la] [la] [în] {area} [la] {percentage}[%] [la sută] "
+  SetCover_min_max:
+    data:
+      - sentences:
+          - "(deschide|închide) rulou[l][ri][le] [din] [de la] [la] [în] {area} [la] {percentage_min_max}"
+
+
+  GetWeather:
+    data:
+      - sentences:  
+          - Care este vremea
+  GetTime:
+    data:
+      - sentences:        
+          - "(cât|care|cat|cît|cit) (este|e) (ora|ceasul|timpul)"
+  GetDate:
+    data:
+      - sentences:        
+          - "(ce|care) (dată|data|zi) este [astăzi] "
+  Set_temperature:
+    data:
+      - sentences:
+          - "(setează|schimbă) temperatura [pe] [din] [de la] [la] [în] {area} la {percentage} [de] [grade]"
+          - "(setează|schimbă) temperatura la {percentage} [de] [grade] [pe] [la] [din] [de la] [la] [în] {area} "
+          - "setează termostatul [pe] [din] [de la] [la] [în] {area} la {percentage} [de] [grade]"
+  Light_reset:
+    data:
+      - sentences:
+          - "resetează lumin[a][ile] din {area}"
+  speech:
+    text: "Am setat termostatul din {{ area }} la {{ percentage }} de grade"
+  MediaPause:
+    data:
+      - sentences:
+          - "Pune pauză [pentru] [la] [muzica] [boxa] [boxele] [din] [de la] [la] [în] {area}"
+
+  MediaPlay:
+    data:
+      - sentences:
+          - "Reia [redararea] [muzica] [pentru] [la] [boxa] [boxele] [din] [de la] [la] [în] {area}"
+          - "Continuă [redararea] [muzica] [pentru] [la]  [boxa] [boxele] [din] [de la] [la] [în] {area}"
+          - "Play [pentru] [la] [muzica] [boxa] [boxele] [din] [de la] [la] [în] [{area}]"
+
+  MediaStop:
+    data:
+      - sentences:
+          - "(oprește|stop) [muzica] [pentru] [boxa] [boxele] [din] [de la] [la] [în] {area}"
+
+  MediaSetVolume:
+    data:
+      - sentences:
+          - "(setează|schimbă) [volumul] [pentru] [la] [muzica] [boxa] [boxele] [din] [de la] [la] [în] {area} la {percentage} [la sută]"
+          - "(setează|schimbă) [volumul] la {percentage} [la sută] [pentru] [la] [muzica] [boxa] [boxele] [din] [de la] [la] [în] {area} "
+
+  MediaSetVolume_min_max:
+    data:
+      - sentences:
+          - "(setează|schimbă) [volumul] [pentru] [la] [muzica] [boxa] [boxele] [din] [de la] [la] [în] {area} la {percentage_min_max}"
+          - "(setează|schimbă) [volumul] la {percentage_min_max} [pentru] [la] [muzica] [boxa] [boxele] [din] [de la] [la] [în] {area} "
+
+
+SpotifyPlaylistPlay:
+    data:
+      - sentences:
+          - "(Vreau să ascult|redă) {playlist} [pe] [în] [la] {media_player}"
+  SpotifyPause:
+    data:
+      - sentences:
+          - "Pune pauză [pentru] [boxa] [boxele] [din] [de la] [la] [în] [{media_player}]"
+  SpotifyPlay:
+    data:
+      - sentences:
+          - "(redă|play) [muzica] [muzică] [pentru] [boxa] [boxele] [din] [de la] [la] [în] [{media_player}]"
+  SpotifyStop:
+    data:
+      - sentences:
+          - "(oprește|stop) [muzica] [pentru] [boxa] [boxele] [din] [de la] [la] [în] [{media_player}]"
+  SpotifyMove:
+    data:
+      - sentences:
+          - "mută muzica în {area}"
+            - "(mută|schibă) [muzica] [redararea] [la] [boxa] [boxele] [din] [de la] [la] [pe] [în] {area}"
+
+
+
+lists:
+
+  cover:
+    values:
+      - in: "ruloul din bucătărie"
+        out: "cover.kitchen_blind"
+      - in: "ruloul din birou"
+        out: "cover.office_cover"
+      - in: "ruloul din dormitor"
+        out: "cover.cover.bedroom_cover"
+      - in: "ruloul din camera lui Andrei"
+        out: "cover.andrew_cover"
+      - in: "ruloul din camera iustinei"
+        out: "cover.justina_cover"
+      - in: "ruloul din living"
+        out: "cover.cover.living_cover"
+
+  percentage_min_max:
+    values:
+      - in: "minim"
+        out: "1"
+      - in: "jumătate"
+        out: "50"
+      - in: "maxim"
+        out: "100"
+  percentage:
+    range:
+      type: number
+      from: 0
+      to: 100
+ 
+  playlist:
+    values:
+      - in: "muzică de relaxare"
+        out: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      - in: "muzică religioasă"
+        out: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      - in: "muzică populară"
+        out: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      - in: "muzică modernă"
+        out: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      - in: "colinde"
+        out: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  media_player:
+    values:
+      - in: "birou"
+        out: "boxa din birou"
+      - in: "dormitor"
+        out: "boxa din dormitor"
+      - in: "parter"
+        out: "boxele de la parter"
+      - in: "hol"
+        out: "boxa din hol"
+      - in: "sufragerie"
+        out: "boxa din sufragerie"
+      - in: "foișor"
+        out: "televizorul din foișor"
+      - in: "bucătărie"
+        out: "boxa din bucătărie"
+
 
