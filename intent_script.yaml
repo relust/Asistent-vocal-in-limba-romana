@@ -1,31 +1,21 @@
-SetVolume:
+Set_temperature:
   action:
-    service: "media_player.volume_set"
-    data:
-      entity_id: "{{ media_player}}"
-      volume_level: "{{ percentage / 100 }}"
+    - service: "climate.set_temperature"
+      data:
+        temperature: "{{ percentage }}"
+      target:
+        area_id: "{{ area }}"
   speech:
-    text: "Am setat volumul la {{ percentage }}"
-SetVolume_min_max:
-  action:
-    service: "media_player.volume_set"
-    data:
-      entity_id: "{{ media_player }}"
-      volume_level: "{{ ((percentage_min_max | float) / 100)}}"
-  speech:
-    text: "Am setat volumul la {{ percentage_min_max }}"
-
+    text: "Am setat termostatul din {{ area }} la {{ percentage }} de grade"
+    
 SetCover:
   action:
     - service: "cover.set_cover_position"
       data:
         position: "{{ percentage }}"
       target:
-#        entity_id: "{{ cover }}"
         area: "{{ area }}"
-
   speech:
-#    text: "Am setat ruloul la {{ percentage }}"
     text: "Am setat ruloul din {{ area }} la {{ percentage }}"
 
 SetCover_min_max:
@@ -34,13 +24,28 @@ SetCover_min_max:
     data:
       position: "{{ percentage_min_max }}"
     target:
-#      entity_id: "{{ cover }}"
       area: "{{ area }}"
-
-
   speech:
-#    text: "Am setat ruloul la {{ percentage_min_max }}"
     text: "Am setat ruloul din {{ area }} la {{ percentage }}"
+
+    
+SetVolume:
+  action:
+    service: "media_player.volume_set"
+    data:
+      entity_id: "{{ media_player}}"
+      volume_level: "{{ percentage / 100 }}"
+  speech:
+    text: "Am setat volumul la {{ percentage }}"
+    
+SetVolume_min_max:
+  action:
+    service: "media_player.volume_set"
+    data:
+      entity_id: "{{ media_player }}"
+      volume_level: "{{ ((percentage_min_max | float) / 100)}}"
+  speech:
+    text: "Am setat volumul la {{ percentage_min_max }}"
 
 SpotifyPlaylistPlay:
   action:
@@ -96,12 +101,4 @@ GetDate:
 playMedia:
   speech:
     text: "se redă {{muzica}} de pe spotify"
-Set_temperature:
-  action:
-    - service: "climate.set_temperature"
-      data:
-        temperature: "{{ percentage }}"
-      target:
-        area_id: "{{ area }}"
-  speech:
-    text: "Am setat termostatul din {{ area }} la {{ percentage }} de grade"
+
