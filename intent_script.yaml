@@ -21,10 +21,12 @@ SetCover:
       data:
         position: "{{ percentage }}"
       target:
-        entity_id: "{{ cover }}"
+#        entity_id: "{{ cover }}"
+        area: "{{ area }}"
 
   speech:
-    text: "Am setat ruloul la {{ percentage }}"
+#    text: "Am setat ruloul la {{ percentage }}"
+    text: "Am setat ruloul din {{ area }} la {{ percentage }}"
 
 SetCover_min_max:
   action:
@@ -32,11 +34,13 @@ SetCover_min_max:
     data:
       position: "{{ percentage_min_max }}"
     target:
-      entity_id: "{{ cover }}"
+#      entity_id: "{{ cover }}"
+      area: "{{ area }}"
+
 
   speech:
-    text: "Am setat ruloul la {{ percentage_min_max }}"
-
+#    text: "Am setat ruloul la {{ percentage_min_max }}"
+    text: "Am setat ruloul din {{ area }} la {{ percentage }}"
 
 SpotifyPlaylistPlay:
   action:
