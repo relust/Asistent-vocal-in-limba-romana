@@ -7,6 +7,11 @@ Set_temperature:
         area_id: "{{ area }}"
   speech:
     text: "Am setat termostatul din {{ area }} la {{ percentage }} de grade"
+#Get_temperature:
+#  speech:
+#    data:
+#      climate: "{{ climate }}"
+#    text: "Temperatura este de {{ state_attr(climate, 'current_temperature') | replace('.', ' virgulă ') }} grade."
     
 SetCover:
   action:
@@ -29,23 +34,56 @@ SetCover_min_max:
     text: "Am setat ruloul din {{ area }} la {{ percentage }}"
 
     
-SetVolume:
+MediaPause:
   action:
-    service: "media_player.volume_set"
-    data:
-      entity_id: "{{ media_player}}"
-      volume_level: "{{ percentage / 100 }}"
+    service: "media_player.media_pause"
+    target:
+      area_id: "{{area}}"
   speech:
-    text: "Am setat volumul la {{ percentage }}"
-    
-SetVolume_min_max:
+    text: " "
+#  speech:
+#    text: "Am pus pauză în {{area}}"
+
+MediaPlay:
+  action:
+    service: "media_player.media_play"
+    target:
+      area_id: "{{area}}"
+  speech:
+    text: " "
+#  speech:
+#    text: "Am reluat redarea"
+
+MediaStop:
+  action:
+    service: "media_player.media_stop"
+    target:
+      area_id: "{{area}}"
+  speech:
+    text: " "
+#  speech:
+#    text: "Am oprit redarea în {{area}}"
+
+MediaSetVolume:
   action:
     service: "media_player.volume_set"
     data:
-      entity_id: "{{ media_player }}"
+      volume_level: "{{percentage / 100}}"
+    target:
+      area_id: "{{area}}"
+  speech:
+    text: "Am setat  volumul din {{area}} la {{ percentage }}"
+
+MediaSetVolume_min_max:
+  action:
+    service: "media_player.volume_set"
+    data:
       volume_level: "{{ ((percentage_min_max | float) / 100)}}"
+    target:
+      area_id: "{{area}}"
   speech:
-    text: "Am setat volumul la {{ percentage_min_max }}"
+    text: "Am setat volumul din {{ area }} la {{ percentage_min_max }}"
+
 
 SpotifyPlaylistPlay:
   action:
@@ -61,34 +99,9 @@ SpotifyPlaylistPlay:
   speech:
     text: "Se redă playlistul de pe spotify"
 
-SpotifyPause:
-  action:
-    service: "media_player.media_pause"
-    data:
-      entity_id: "{{ media_player}}"
-  speech:
-    text: "Am pus pauză"
-
-SpotifyPlay:
-  action:
-    service: "media_player.media_play"
-    data:
-      entity_id: "{{ media_player}}"
-  speech:
-    text: "Am reluat redarea"
-
-SpotifyStop:
-  action:
-    service: "media_player.media_stop"
-    data:
-      entity_id: "{{ media_player}}"
-  speech:
-    text: "Am oprit redarea"
-
-
 GetWeather:
   speech:
-    text: " Temperatura de afara este {{ state_attr('weather.openweathermap', 'temperature') }} grade, viteza vântului este {{state_attr('weather.openweathermap', 'wind_speed') }} kilometri pe oră, probabilitatea de precipitații este de {{ states('sensor.openweathermap_forecast_precipitation_probability') }} la sută, și este {{ states('sensor.openweathermap_weather') }}"
+    text: " Temperatura de afara este {{ state_attr('weather.openweathermap', 'temperature')| replace('.', ' virgulă ' }} grade, viteza vântului este {{state_attr('weather.openweathermap', 'wind_speed')| replace('.', ' virgulă ' }} kilometri pe oră, probabilitatea de precipitații este de {{ states('sensor.openweathermap_forecast_precipitation_probability')| replace('.', ' virgulă ' }} la sută, și este {{ states('sensor.openweathermap_weather') }}"
 
 GetTime:
   speech:
@@ -97,8 +110,23 @@ GetTime:
 GetDate:
   speech:
     text: "Astăzi este {{ states.sensor.date.state }}"
-
-playMedia:
+ShoppingList_remove:
+  action:
+    service: "shopping_list.remove_item"
+    data:
+      name: "{{name}}"
   speech:
-    text: "se redă {{muzica}} de pe spotify"
+    text: "am înlăturat {{name}} din lista de cumpărături"
+    
+  Light_reset:
+  action:
+    - service: "light.turn_on"
+      data:
+        color_temp: 320
+        brightness_pct: 90
+      target:
+        area_id: "{{ area }}"
+  speech:
+    text: "Am resetat lumina din {{ area }}"
+
 
