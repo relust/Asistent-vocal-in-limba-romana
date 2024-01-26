@@ -127,15 +127,15 @@ lists:
   playlist:
     values:
       - in: "muzică de relaxare"
-        out: "37i9dQZF1EIeK62ol20ONe?si=f280b1d95909403b"
+        out: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
       - in: "muzică religioasă"
-        out: "5f8netQTS5R2eWaY6NUILN?si=78db79ac13f9436d"
+        out: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
       - in: "muzică populară"
-        out: "3oZdqcGaOkMpiImcocENRr?si=b3ac072b9ac448c5"
+        out: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
       - in: "muzică modernă"
-        out: "2nu4HTrmoc5JJdVTK3550w?si=76acb1cb3ccb46f5"
+        out: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
       - in: "colinde"
-        out: "43ERVdFYhNNcirQqUWanT7?si=b2d3d655c0304dee"
+        out: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   media_player:
     values:
       - in: "birou"
